@@ -23,10 +23,6 @@ import com.events.dao.EventsDAO;;
 public class EventResource{
 
 
-	
-
-
-
 	@Path("{json}")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -48,7 +44,7 @@ public class EventResource{
 	@Produces("application/json")
 	public Response getEvents(@PathParam("id") Integer id)  throws Exception {
 
-		
+
 		Event event = EventsDAO.getInstance().getEvent(id);
 
 		String result = "@Produces(\"application/json\")" + event ;
@@ -60,7 +56,7 @@ public class EventResource{
 	@Produces("application/json")
 	public Response getAllEvents()  throws Exception {
 
-		
+
 		String rs = EventsDAO.getInstance().getAllEvents();
 
 		String result = "@Produces(\"application/json\") Output: \n\n event is \n\n" + rs ;
@@ -91,8 +87,8 @@ public class EventResource{
 	@Produces("application/json")
 	public Response deleteEvents(@PathParam("id") Integer id)  throws Exception {
 
-		
-		
+
+
 		EventsDAO.getInstance().deleteEvent(id);
 
 		String result = "@Produces(\"application/json\") Output: \n\n events deleted is \n\n" + id  ;
@@ -104,7 +100,7 @@ public class EventResource{
 	@Produces("application/json")
 	public Response deleteAllEvents()  throws Exception {
 
-		
+
 		EventsDAO.getInstance().deleteAllEvents();
 
 		String result = "@Produces(\"application/json\") Output: \n\n events deleted is \n\n";
