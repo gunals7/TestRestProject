@@ -10,7 +10,7 @@ import java.sql.Statement;
  * @author guns
  *
  */
-public class DataSourceHelper {
+public class BaseDAO {
 
 	private static Connection connection = null;
 	public static void createConnection(){

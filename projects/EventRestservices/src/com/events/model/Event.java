@@ -4,12 +4,15 @@ public class Event {
 
 
 	private String data;
+	
+	private int id;
 
 	public Event(){
 
 	}
 
-	public Event(String data){
+	public Event(int id, String data){
+		this.id = id;
 		this.data = data;
 	}
 
@@ -22,10 +25,18 @@ public class Event {
 		return data;
 	}
 
+	public void setId(int Id){
+		this.id = id;
+
+	}
+
+	public int getId(){
+		return id;
+	}
 	@Override
 	public String toString() {
 
-		return new StringBuffer(" data : ").append(this.data).toString();
+		return new StringBuffer(" data : ").append(this.data).append(this.id).toString();
 
 
 	}

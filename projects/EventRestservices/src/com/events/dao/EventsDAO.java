@@ -3,6 +3,7 @@ package com.events.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.events.model.Event;
 
@@ -12,60 +13,63 @@ import com.events.model.Event;
  * @author guns
  *
  */
-public class EventsDAO
+public class EventsDAO extends BaseDAO
 {
 
 	private static EventsDAO instance = null;
 	
 	private EventsDAO(){
-		DataSourceHelper.initDataSource();
+		BaseDAO.initDataSource();
 	}
 
+	
+	
 	public static EventsDAO getInstance(){
 
 		if (instance == null){
-			instance = new EventsDAO();
+		   //Thread safe 	
+		   synchronized(EventsDAO.class){	
+			  if (instance == null) {
+			     instance = new EventsDAO();
+			  }
+		   }	
 		}
 		return instance;
 	}
 
 	
-//	//initiate the Datasource, create the tables if they don't exist.
-//	static  {
-//
-//		initDataSource();
-//	}
 
-	public  void createEvent(String data)
+
+	public  void createEvent(Event event)
 	{
 
-		String insertQuery = "insert into events (data) values(' "+ data + "' )";
-		DataSourceHelper.executeUpdateQuery(insertQuery);
+		String insertQuery = "insert into events (data) values(' "+ event.getData() + "' )";
+		executeUpdateQuery(insertQuery);
 
 	} 
 	
-	public  void updateEvent(Integer id, String data) 
+	public  void updateEvent(Integer id, Event event) 
 	{
 
-		String query = "update events SET data='"+ data + "' where id = " + id.intValue();
+		String query = "update events SET data='"+ event.getData() + "' where id = " + id.intValue();
 		System.out.println("update query ="+query);
-		DataSourceHelper.executeUpdateQuery(query);
+		executeUpdateQuery(query);
 
 
 	}
 
-	public  void deleteEvent(Integer id) throws ClassNotFoundException
+	public  void deleteEvent(Integer id) 
 	{
 		String query =  "delete from events where id = " + id.intValue();
 		System.out.println("delete query ="+query);
-		DataSourceHelper.executeUpdateQuery(query);
+		executeUpdateQuery(query);
 		
 	}
-	public  void deleteAllEvents() throws ClassNotFoundException
+	public  void deleteAllEvents() 
 	{
 		String query = " delete from events";
 		System.out.println("delete query ="+query);
-		DataSourceHelper.executeUpdateQuery(query);
+		executeUpdateQuery(query);
 		
 	}
 
@@ -80,14 +84,14 @@ public class EventsDAO
 
 		System.out.println("Query is ="+query);
 
-		ResultSet rs = DataSourceHelper.executeQuery(query);
+		ResultSet rs = executeQuery(query);
 		try {
 			while(rs.next())
 			{
 				// read the result set
 				String data =  rs.getString("data");
-				int eventid = rs.getInt("id");
-				event = new Event(data);
+				int eventId = rs.getInt("id");
+				event = new Event(eventId,data);
 			}
 			return event;
 		}
@@ -97,30 +101,34 @@ public class EventsDAO
 			// it probably means no database file is foun
 			System.err.println(e.getMessage());
 		}
-        DataSourceHelper.closeConnection();
+        closeConnection();
 		return event; 
 
 	}
 
 
-	public  String getAllEvents() 
+	public  ArrayList<Event> getAllEvents() 
 	{
 
-		String event="";
+		
 		String query = "select * from events";
 
 
 		System.out.println("Query is ="+query);
+		
+		ArrayList<Event> events = new ArrayList<Event>();
 
-		ResultSet rs = DataSourceHelper.executeQuery(query);
+		ResultSet rs = BaseDAO.executeQuery(query);
 		try {
 			while(rs.next())
 			{
 				// read the result set
-				event = event + "name = " + rs.getString("data");
-				event = event + " id = " + rs.getInt("id");
+				
+				
+				Event evt = new Event(rs.getInt("id"), rs.getString("data"));
+				events.add(evt);
 			}
-			return event;
+			return events;
 		}
 		catch(SQLException e)
 		{
@@ -128,8 +136,8 @@ public class EventsDAO
 			// it probably means no database file is foun
 			System.err.println(e.getMessage());
 		}
-		DataSourceHelper.closeConnection();
-		return event; 
+		closeConnection();
+		return events; 
 	}
 
 	
