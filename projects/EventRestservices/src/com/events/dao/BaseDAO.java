@@ -10,12 +10,13 @@ import java.sql.Statement;
  * @author guns
  *
  */
+
 public class BaseDAO {
 
 	private static Connection connection = null;
 	public static void createConnection(){
 
-
+    // This shall be changed to configure connection pool and get connections from the pool.
 		try
 		{
 			Class.forName("org.sqlite.JDBC");
@@ -43,7 +44,7 @@ public class BaseDAO {
 
 		String tableCreateQuery = "create table events (id integer PRIMARY KEY ASC AUTOINCREMENT, data string)";
 
-		//executeUpdateQuery(tableCreateQuery);
+		executeUpdateQuery(tableCreateQuery);
 	}    
 
 

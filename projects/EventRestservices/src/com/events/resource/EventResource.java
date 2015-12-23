@@ -6,6 +6,7 @@ package com.events.resource;
  * @author guns
  */
 
+import java.net.URI;
 import java.util.ArrayList;
 
 import javax.ws.rs.Consumes;
@@ -45,6 +46,8 @@ public class EventResource{
 
 		String result = "@Produces(\"application/json\") Output: \n\n event added \n\n" + event;
 		return Response.status(200).entity(result).build();
+		 //return Response.status(201)
+	      //          .contentLocation(new URI("/events/1")).build();
 	}
 
 	@Path("{id}")
