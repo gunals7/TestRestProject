@@ -2,9 +2,11 @@ package com.events.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  * @author guns
@@ -44,7 +46,7 @@ public class BaseDAO {
 
 		String tableCreateQuery = "create table events (id integer PRIMARY KEY ASC AUTOINCREMENT, data string)";
 
-		executeUpdateQuery(tableCreateQuery);
+		executeUpdateQuery(tableCreateQuery, null);
 	}    
 
 
@@ -58,16 +60,34 @@ public class BaseDAO {
 		return connection;
 	}
 
-	public static void executeUpdateQuery(String query){
+	//Use this for database inserts/updates/deletes..
+	public static int executeUpdateQuery(String query, ArrayList<String> params ){
 
 		try
 		{
 			// get a database connection
 			Connection conn = getConnection();
 			if (conn != null){
-				Statement statement = conn.createStatement();
-				statement.setQueryTimeout(30);  // set timeout to 30 sec.
-				statement.executeUpdate(query);
+				PreparedStatement pstatement = conn.prepareStatement(query);
+				pstatement.setQueryTimeout(30);  // set timeout to 30 sec.
+				if (params != null){
+				for(int i = 0; i < params.size(); i++){
+					
+					String param = params.get(i);
+					
+					if (param != null){
+						pstatement.setString(i+1, param);
+					}
+ 			    }
+				}
+				int rowid= pstatement.executeUpdate();
+				ResultSet rs = pstatement.getGeneratedKeys();
+				if (rs != null){
+					
+					rowid = rs.getInt(1);
+				}
+				
+				return rowid;
 
 			}
 		}
@@ -82,10 +102,10 @@ public class BaseDAO {
 			closeConnection();
 
 		}
-
+        return 0;
 	}
 
-	public static ResultSet executeQuery(String query){
+	public static ResultSet executeQuery(String query, ArrayList<String> whereParams){
 
 		ResultSet rs=null;
 		try
@@ -94,10 +114,19 @@ public class BaseDAO {
 			// get a database connection
 			Connection conn = getConnection();
 			if (conn != null){
-				Statement statement = conn.createStatement();
-				statement.setQueryTimeout(30);  // set timeout to 30 sec.
-
-				rs = statement.executeQuery(query);
+				PreparedStatement pstatement = conn.prepareStatement(query);
+				pstatement.setQueryTimeout(30);  // set timeout to 30 sec.
+				if (whereParams != null){
+				for(int i = 0; i < whereParams.size(); i++){
+					
+					String whereParam = whereParams.get(i);
+					
+					if (whereParam != null){
+						pstatement.setString(i+1, whereParam);
+					}
+ 			    }
+				}
+		        rs = pstatement.executeQuery();
                 return rs;
 
 			}

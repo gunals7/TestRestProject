@@ -6,9 +6,9 @@ import com.events.model.Event;
 
 public interface EventService {
 	
-	public void createEvent(Event event);
+	public int createEvent(Event event);
 	
-	public void updateEvent(Integer Id, Event event);
+	public void updateEvent( Event event);
 	
 	public void deleteEvent(Integer Id);
 	

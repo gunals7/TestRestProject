@@ -23,16 +23,16 @@ import javax.ws.rs.core.Response;
 import com.events.model.Event;
 import com.events.service.EventService;
 import com.events.service.EventServiceImpl;
-import com.events.dao.EventsDAO;;
+import com.events.dao.EventsDAO;
 @Path("/events")
 public class EventResource{
 
 
-
+	
 
     private EventService eventService = EventServiceImpl.getInstance();
 
-
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
@@ -41,13 +41,14 @@ public class EventResource{
 		String output = event.toString();
 		System.out.println("post Json ="+ output);
 
-
-		eventService.createEvent(event);
+		
+		int rowid = eventService.createEvent(event);
+		event.setId(rowid);
 
 		String result = "@Produces(\"application/json\") Output: \n\n event added \n\n" + event;
-		return Response.status(200).entity(result).build();
-		 // HATEOAS link return Response.status(201)
-	      //          .contentLocation(new URI("/events/1")).build();
+		//return Response.status(200).entity(result).build();
+		 return Response.status(201)
+	                .contentLocation(new URI("/events/" + rowid)).build();
 	}
 
 	@Path("{id}")
@@ -55,14 +56,14 @@ public class EventResource{
 	@Produces("application/json")
 	public Response getEvents(@PathParam("id") Integer id)  throws Exception {
 
-	    Event event = 	eventService.getEvent(id);
-
+	    Event event = 	eventService.getEvent(id); 		
+	    
 	    if(event == null){
 	    	return Response.status(404).entity("Resource not exist for event id").build();
 	    }
-
+	    
 	    String result = "@Produces(\"application/json\")" + eventService.getEvent(id); ;
-
+		
 		return Response.status(200).entity(result).build();
 	}
 
@@ -71,7 +72,7 @@ public class EventResource{
 	@Produces("application/json")
 	public Response getAllEvents()  throws Exception {
 
-
+		
 		ArrayList<Event> events = eventService.getAllEvents();
 		if (events.isEmpty()){
 			return Response.status(404).entity("Resource not exist - No events in the system").build();
@@ -89,12 +90,11 @@ public class EventResource{
 	public Response updatEvents(@PathParam("id") Integer id,Event event)  throws Exception {
 
 		String output = event.toString();
-		System.out.println("post Json ="+ output);
+		
+		event.setId(id.intValue());
+		eventService.updateEvent(event);
 
-		//jsonObject
-		eventService.updateEvent(id,event);
-
-		String result = "@Produces(\"application/json\") Output: \n\n event updated \n\n" + output;
+		String result = "@Produces(\"application/json\") Output: \n\n event updated \n\n" + event;
 		return Response.status(200).entity(result).build();
 	}
 
@@ -105,8 +105,8 @@ public class EventResource{
 	@Produces("application/json")
 	public Response deleteEvents(@PathParam("id") Integer id)  throws Exception {
 
-
-
+		
+		
 		eventService.deleteEvent(id);
 
 		String result = "@Produces(\"application/json\") Output: \n\n events deleted is \n\n" + id  ;
@@ -118,7 +118,7 @@ public class EventResource{
 	@Produces("application/json")
 	public Response deleteAllEvents()  throws Exception {
 
-
+		
 		eventService.deleteAllEvents();
 
 		String result = "@Produces(\"application/json\") Output: \n\n events deleted is \n\n";

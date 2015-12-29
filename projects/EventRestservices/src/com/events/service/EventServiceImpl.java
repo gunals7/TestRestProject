@@ -32,16 +32,16 @@ private static EventService instance = null;
 	}
 	
 	
-	public  void createEvent(Event event)
+	public  int createEvent(Event event)
 	{
 
-		EventsDAO.getInstance().createEvent(event);
+		return (EventsDAO.getInstance().createEvent(event));
 	} 
 	
-	public  void updateEvent(Integer id, Event event) 
+	public  void updateEvent(Event event) 
 	{
 
-		EventsDAO.getInstance().updateEvent(id, event);		
+		EventsDAO.getInstance().updateEvent(event);		
 
 
 	}

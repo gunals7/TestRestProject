@@ -23,6 +23,18 @@ public class EventsDAO extends BaseDAO
 	}
 
 	
+	private final String INSERT_SQL = "insert into events (data) values( ? )" ;
+	
+	private final String UPDATE_SQL = "update events SET data= ? where id = ? ";
+	
+	private final String SELECT_SQL = "select * from events where id = ?";
+	
+	private final String SELECTALL_SQL = "select * from events";
+	
+	private final String DELETE_SQL = "delete from events where id = ?" ;
+	
+	private final String DELETEALL_SQL = "delete from events" ;
+	
 	
 	public static EventsDAO getInstance(){
 
@@ -40,37 +52,48 @@ public class EventsDAO extends BaseDAO
 	
 
 
-	public  void createEvent(Event event)
+	public  int createEvent(Event event)
 	{
 
-		String insertQuery = "insert into events (data) values(' "+ event.getData() + "' )";
-		executeUpdateQuery(insertQuery);
+		
+		ArrayList<String> params = new ArrayList<String>();
+		
+		params.add(event.getData());
+		return (executeUpdateQuery(INSERT_SQL, params));
 
 	} 
 	
-	public  void updateEvent(Integer id, Event event) 
+	public  void updateEvent(Event event) 
 	{
 
-		String query = "update events SET data='"+ event.getData() + "' where id = " + id.intValue();
-		System.out.println("update query ="+query);
-		executeUpdateQuery(query);
-
+		//String query = "update events SET data='"+ event.getData() + "' where id = " + id.intValue();
+        ArrayList<String> params = new ArrayList<String>();
+        params.add(event.getData());
+        System.out.println("Update Id is" +new Integer(event.getId()).toString());
+       	params.add(new Integer(event.getId()).toString());
+		System.out.println("update query ="+UPDATE_SQL);
+		executeUpdateQuery(UPDATE_SQL,params);
 
 	}
 
 	public  void deleteEvent(Integer id) 
 	{
-		String query =  "delete from events where id = " + id.intValue();
-		System.out.println("delete query ="+query);
-		executeUpdateQuery(query);
+		//String query =  "delete from events where id = " + id.intValue();
+		if (id != null){
+			ArrayList<String> params = new ArrayList<String>();
+		    params.add(id.toString());
+		    System.out.println("DELETE Query is ="+ DELETE_SQL);
+		     executeUpdateQuery(DELETE_SQL,params);
+		  
+		}			
 		
 	}
 	public  void deleteAllEvents() 
 	{
-		String query = " delete from events";
-		System.out.println("delete query ="+query);
-		executeUpdateQuery(query);
-		
+		    System.out.println("DELETE ALL Query is ="+ DELETEALL_SQL);
+		     executeUpdateQuery(DELETEALL_SQL,null);
+		  
+				
 	}
 
 	public  Event getEvent(Integer id) 
@@ -79,12 +102,12 @@ public class EventsDAO extends BaseDAO
 		Event event=null;
 		String query = "";
 		if (id != null){
-			query =  "select * from events where id = " + id.intValue();
-		}
+			ArrayList<String> params = new ArrayList<String>();
+		    params.add(id.toString());
+		
+		  System.out.println("Query is ="+SELECT_SQL);
 
-		System.out.println("Query is ="+query);
-
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeQuery(SELECT_SQL, params);
 		try {
 			while(rs.next())
 			{
@@ -101,8 +124,10 @@ public class EventsDAO extends BaseDAO
 			// it probably means no database file is foun
 			System.err.println(e.getMessage());
 		}
+		}
         closeConnection();
 		return event; 
+		
 
 	}
 
@@ -111,14 +136,13 @@ public class EventsDAO extends BaseDAO
 	{
 
 		
-		String query = "select * from events";
+		
 
-
-		System.out.println("Query is ="+query);
+		System.out.println(" Select ALL Query is =" + SELECTALL_SQL);
 		
 		ArrayList<Event> events = new ArrayList<Event>();
 
-		ResultSet rs = BaseDAO.executeQuery(query);
+		ResultSet rs = BaseDAO.executeQuery(SELECTALL_SQL, null);
 		try {
 			while(rs.next())
 			{
